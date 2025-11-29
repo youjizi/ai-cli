@@ -1,0 +1,76 @@
+{
+  "compilerOptions": {
+    // ==================== 严格类型检查 ====================
+    // 启用所有严格类型检查选项（推荐开启）
+    "strict": true,
+    // 禁止隐式 any 类型，所有变量必须明确声明类型
+    // 示例：function test(x) {} ❌  →  function test(x: string) {} ✅
+    "noImplicitAny": true,
+    // 严格的 null 和 undefined 检查
+    // 示例：let x: string = null ❌  →  let x: string | null = null ✅
+    "strictNullChecks": true,
+    // 检测未使用的局部变量
+    "noUnusedLocals": true,
+    // 函数的所有代码路径都必须有返回值
+    // 示例：function test(): number { if (x) return 1; } ❌
+    "noImplicitReturns": true,
+    // 禁止 this 表达式隐式具有 any 类型
+    "noImplicitThis": true,
+    // 严格检查 bind、call、apply 的参数类型
+    "strictBindCallApply": true,
+    // 严格检查函数类型
+    "strictFunctionTypes": true,
+    // 类的属性必须在构造函数中初始化
+    "strictPropertyInitialization": true,
+    // ==================== 模块系统 ====================
+    // 使用 Node.js 的下一代模块解析（支持 ESM 和 CommonJS）
+    "module": "NodeNext",
+    // 模块解析策略，与 module 配合使用
+    "moduleResolution": "nodenext",
+    // 允许从没有默认导出的模块中默认导入
+    // 示例：import React from 'react' 而不是 import * as React
+    "esModuleInterop": true,
+    // 允许合成默认导入（配合 esModuleInterop 使用）
+    "allowSyntheticDefaultImports": true,
+    // 使用详细的模块语法（import type 必须显式声明）
+    "verbatimModuleSyntax": true,
+    // ==================== 编译输出 ====================
+    // 生成 .d.ts 类型声明文件（供其他包使用）
+    "declaration": true,
+    // 生成 .d.ts.map 文件（类型定义的 source map）
+    "declarationMap": true,
+    // 生成 .js.map 文件（用于调试，映射回源代码）
+    "sourceMap": true,
+    // 启用增量编译（只编译修改的文件，加快编译速度）
+    "incremental": true,
+    // ==================== 项目引用（Monorepo 必需）====================
+    // 启用项目引用功能，支持多包项目
+    "composite": true,
+    // ==================== 编译目标 ====================
+    // 编译后的 JavaScript 版本（ES2022 支持大部分现代特性）
+    "target": "es2022",
+    // 可用的标准库（ES2023 包含最新的 JavaScript API）
+    "lib": [
+      "ES2023"
+    ],
+    // ==================== 其他重要选项 ====================
+    // 跳过 .d.ts 文件的类型检查（加快编译速度，推荐开启）
+    "skipLibCheck": true,
+    // 强制文件名大小写一致（避免跨平台问题）
+    // Windows 不区分大小写，但 Linux/Mac 区分
+    "forceConsistentCasingInFileNames": true,
+    // 允许导入 JSON 文件
+    // 示例：import data from './config.json'
+    "resolveJsonModule": true,
+    // 禁止通过索引签名访问属性（更严格的类型检查）
+    // 示例：obj['key'] ❌  →  obj.key ✅
+    "noPropertyAccessFromIndexSignature": true,
+    // 禁止隐式的 override（子类覆盖父类方法时必须显式声明）
+    "noImplicitOverride": true,
+    // 全局类型定义（Node.js 和 Vitest 测试框架）
+    "types": [
+      "node",
+      "vitest/globals"
+    ]
+  }
+}

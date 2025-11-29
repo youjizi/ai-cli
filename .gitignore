@@ -1,0 +1,57 @@
+# API 密钥和敏感信息
+.env
+.env~
+
+# gemini-cli 设置
+# 保留根目录的 .gemini，但忽略子目录的 .gemini
+# 在根目录的 .gemini 中，我们允许对子命令进行版本控制
+**/.gemini/
+!/.gemini/
+.gemini/*
+!.gemini/config.yaml
+!.gemini/commands/
+
+# 注意：.gemini-clipboard/ 不在 gitignore 中，这样 Gemini 可以访问粘贴的图片
+
+# 依赖目录
+node_modules
+bower_components
+
+# 编辑器
+.idea
+*.iml
+
+# 操作系统元数据
+.DS_Store      # macOS
+Thumbs.db      # Windows
+
+# TypeScript 构建信息文件
+*.tsbuildinfo
+
+# 忽略编译后的 TypeScript 文件
+dist
+
+# Docker 文件夹，用于跳过认证刷新
+.docker
+
+# 打包输出目录
+bundle
+
+# 测试报告文件
+junit.xml
+packages/*/coverage/
+
+# 自动生成的文件
+packages/cli/src/generated/
+packages/core/src/generated/
+.integration-tests/
+packages/vscode-ide-companion/*.vsix
+packages/cli/download-ripgrep*/
+
+# GHA 凭证
+gha-creds-*.json
+
+# 日志文件
+patch_output.log
+
+.genkit

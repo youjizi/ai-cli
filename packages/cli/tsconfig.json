@@ -1,0 +1,53 @@
+{
+  // 继承根目录的基础配置
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    // ==================== 编译输出配置 ====================
+    // 编译后的文件输出到 dist 目录
+    "outDir": "dist",
+    // 源代码的根目录（只编译 src 下的文件）
+    "rootDir": "src",
+    // 启用项目引用（允许其他包引用这个包）
+    "composite": true,
+    // ==================== React/JSX 支持 ====================
+    // React 17+ 的新 JSX 转换（自动导入 jsx runtime）
+    // 不需要在每个文件中 import React
+    "jsx": "react-jsx",
+    // ==================== 库支持 ====================
+    // 包含 DOM 类型定义（CLI 使用 Ink，需要 React 类型）
+    // 包含 ES2023 标准库
+    "lib": [
+      "DOM",
+      "DOM.Iterable",
+      "ES2023"
+    ],
+    // 全局类型定义
+    "types": [
+      "node",
+      "vitest/globals"
+    ]
+  },
+  // ==================== 包含的文件 ====================
+  // 编译 src 目录下的所有 TypeScript 和 TSX 文件
+  "include": [
+    "src/**/*.ts",
+    "src/**/*.tsx", // React 组件文件
+    "src/**/*.json"
+  ],
+  // ==================== 排除的文件 ====================
+  // 不编译这些目录
+  "exclude": [
+    "node_modules", // 依赖包
+    "dist", // 编译输出目录
+    "**/*.test.ts", // 测试文件
+    "**/*.test.tsx" // React 组件测试文件
+  ],
+  // ==================== 项目引用 ====================
+  // 声明这个包依赖 core 包
+  // TypeScript 会先编译 core，然后再编译 cli
+  "references": [
+    {
+      "path": "../core"
+    }
+  ]
+}
