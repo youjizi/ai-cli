@@ -34,6 +34,9 @@
     "allowSyntheticDefaultImports": true,
     // 使用详细的模块语法（import type 必须显式声明）
     "verbatimModuleSyntax": true,
+    // ==================== JSX 支持 ====================
+    // 支持 React JSX 语法
+    "jsx": "react-jsx",
     // ==================== 编译输出 ====================
     // 生成 .d.ts 类型声明文件（供其他包使用）
     "declaration": true,

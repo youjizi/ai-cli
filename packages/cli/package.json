@@ -10,10 +10,14 @@
     "dev": "node ./dist/index.js"
   },
   "dependencies": {
-    "@ai-cli-project/core": "*"
+    "@ai-cli-project/core": "*",
+    "ink": "npm:@jrichman/ink@^6.4.6",
+    "react": "^19.0.0",
+    "react-devtools-core": "^6.1.2"
   },
   "devDependencies": {
     "@types/node": "^24.10.1",
+    "@types/react": "^19.0.0",
     "typescript": "^5.0.0",
     "vitest": "^4.0.14"
   }

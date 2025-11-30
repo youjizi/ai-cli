@@ -40,7 +40,7 @@ const cliConfig = {
     ...baseConfig,
 
     // 📌 入口文件: 从哪里开始打包
-    entryPoints: ['packages/cli/src/index.ts'],
+    entryPoints: ['packages/cli/index.ts'],
 
     // 📌 输出文件: 打包后的文件放在哪里
     outfile: 'bundle/cli-demo.js',
