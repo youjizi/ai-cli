@@ -1,14 +1,12 @@
-import { render, Text } from 'ink';
-import {MessageList} from './components/MessageList.js'
-import {Spinner} from './components/Spinner.js'
+import { render } from 'ink';
+
 
 import { Fragment } from 'react/jsx-runtime';
+import {InputApp} from "./commands/InputApp.js";
 
 const App= () =>(
     <Fragment>
-        <Text color="green">Hello World from Ink!</Text>
-        <Spinner/>
-        <MessageList/>
+        <InputApp/>
     </Fragment>
 
 );

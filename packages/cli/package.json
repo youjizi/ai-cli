@@ -13,6 +13,7 @@
     "@ai-cli-project/core": "*",
     "ink": "npm:@jrichman/ink@^6.4.6",
     "ink-spinner": "^5.0.0",
+    "ink-text-input": "^6.0.0",
     "react": "^19.0.0",
     "react-devtools-core": "^6.1.2"
   },
