@@ -36,7 +36,7 @@ const searchTextTool: FunctionDeclaration = {
 };
 
 // 工具执行器
-function executeTool(name: string, args: Record<string, unknown>) {
+function executeTool(name: string | undefined, args: Record<string, unknown>) {
     if (name === 'read_file') {
         const filePath = args['file_path'] as string;
         try {
