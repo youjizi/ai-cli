@@ -1,0 +1,13 @@
+{
+	"folders": [
+		{
+			"path": "../../../ai/gemini-cli"
+		},
+		{
+			"path": ".."
+		}
+	],
+  "settings": {
+    "typescript.tsserver.experimental.enableProjectDiagnostics": true
+  }
+}
