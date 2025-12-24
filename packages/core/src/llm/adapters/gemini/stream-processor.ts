@@ -13,7 +13,6 @@ export async function* processGeminiStream(
         // 第0个 是content体
         const candidate = chunk.candidates?.[0];
         const parts = candidate?.content?.parts ?? [];
-
         for (const part of parts) {
             if ('text' in part && part.text) {
                 yield {
@@ -45,13 +44,12 @@ export async function* processGeminiStream(
                 totalTokens: chunk.usageMetadata.totalTokenCount ?? 0,
             };
         }
-        // 最后发送完成事件
-        yield {
-            type: 'done',
-            finishReason,
-            usage,
-        };
+
     }
-
-
+    // 最后发送完成事件
+    yield {
+        type: 'done',
+        finishReason,
+        usage,
+    };
 }

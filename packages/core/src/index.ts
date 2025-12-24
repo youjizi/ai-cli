@@ -23,13 +23,14 @@ async function main() {
 
 
     for await (const event of stream) {
-        if (event.type === 'text_delta') {
-            process.stdout.write(event.text);
-        } else if (event.type === 'tool_call') {
-            console.log(`\n[Tool Call] ${event.name}`);
-        } else if (event.type === 'done') {
-            console.log(`\n[Done] ${event.finishReason}`);
-        }
+        console.log(event.type);
+        // if (event.type === 'text_delta') {
+        //     process.stdout.write(event.text);
+        // } else if (event.type === 'tool_call') {
+        //     console.log(`\n[Tool Call] ${event.name}`);
+        // } else if (event.type === 'done') {
+        //     console.log(`\n[Done] ${event.finishReason}`);
+        // }
     }
 }
 
