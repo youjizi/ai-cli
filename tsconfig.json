@@ -26,7 +26,7 @@
     // 使用 Node.js 的下一代模块解析（支持 ESM 和 CommonJS）
     "module": "NodeNext",
     // 模块解析策略，与 module 配合使用
-    "moduleResolution": "bundler",
+    "moduleResolution": "nodenext",
     // 允许从没有默认导出的模块中默认导入
     // 示例：import React from 'react' 而不是 import * as React
     "esModuleInterop": true,

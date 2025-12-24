@@ -1,4 +1,4 @@
-import {GeminiAdapter, type Message, registry} from "./llm";
+import {GeminiAdapter, type Message, registry} from "./llm/index.js";
 import {GoogleGenAI} from "@google/genai";
 
 async function main() {
@@ -14,11 +14,10 @@ async function main() {
         {role: 'user', content: [{type: 'text', text: '你好，你在什么名字，可以跟我说你的经历吗？'}]}
     ];
 
-    const stream = await geminiModel.generateStream({
+    const stream = geminiModel.generateStream({
         model: 'gemini-2.5-flash',
         messages,
         system: '你是一个ISFP的人类'
-
     });
 
 

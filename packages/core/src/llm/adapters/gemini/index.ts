@@ -1,1 +1,1 @@
-export { GeminiAdapter } from './adapter';
+export { GeminiAdapter } from './adapter.js';
