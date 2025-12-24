@@ -575,7 +575,7 @@ function toPart(part: PartUnion): Part {
 
 ### Phase 2: 适配器层
 4. **LLMProviderAdapter 接口** - 定义适配器契约
-5. **GeminiAdapter** - 实现 Gemini 适配器（保持兼容）
+5. **Adapter** - 实现 Gemini 适配器（保持兼容）
 
 ### Phase 3: 对话层
 6. **UnifiedChat** - 统一对话管理（基于 GeminiChat）
