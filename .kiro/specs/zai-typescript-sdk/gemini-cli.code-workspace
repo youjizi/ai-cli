@@ -1,0 +1,16 @@
+{
+	"folders": [
+		{
+			"path": "../../../../../gemini-cli"
+		},
+		{
+			"path": "../../.."
+		},
+		{
+			"path": "../../../../z-ai-sdk-python-main"
+		}
+	],
+  "settings": {
+    "typescript.tsserver.experimental.enableProjectDiagnostics": true
+  }
+}
