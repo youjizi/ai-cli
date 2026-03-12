@@ -2,10 +2,14 @@
  * Property-based tests for HTTP client
  * **Feature: zai-typescript-sdk, Property 4: Request Header Construction**
  * **Validates: Requirements 2.1**
+ * 
+ * **Feature: zai-typescript-sdk, Property 5: Retry on Retryable Errors**
+ * **Validates: Requirements 2.2, 2.3, 2.4**
  */
 import { describe, it, expect } from 'vitest';
 import * as fc from 'fast-check';
 import { HttpClient } from '../src/core/http-client.js';
+import { RETRYABLE_STATUS_CODES, INITIAL_RETRY_DELAY, MAX_RETRY_DELAY } from '../src/core/constants.js';
 
 // 生成有效的 API key（字母数字组合，无空格）
 const apiKeyArb = fc.string({ minLength: 10, maxLength: 64 })
@@ -140,6 +144,213 @@ describe('Property 4: Request Header Construction', () => {
 
           // 验证其他默认头仍然存在
           expect(request.headers.get('Authorization')).toBe(`Bearer ${apiKey}`);
+        }
+      ),
+      { numRuns: 100 }
+    );
+  });
+});
+
+
+describe('Property 5: Retry on Retryable Errors', () => {
+  /**
+   * Property: shouldRetry returns true for retryable status codes (429, 5xx)
+   * *For any* request that receives a 429 or 5xx response, the HttpClient
+   * SHALL identify it as retryable.
+   */
+  it('shouldRetry returns true for all retryable status codes', () => {
+    fc.assert(
+      fc.property(
+        fc.webUrl(),
+        apiKeyArb,
+        fc.constantFrom(...RETRYABLE_STATUS_CODES),
+        (baseUrl, apiKey, statusCode) => {
+          const client = new HttpClient(baseUrl, apiKey, {
+            timeout: 10000,
+            maxRetries: 2,
+          });
+
+          // 验证可重试状态码返回 true
+          expect(client.shouldRetry(statusCode, false)).toBe(true);
+        }
+      ),
+      { numRuns: 100 }
+    );
+  });
+
+  /**
+   * Property: shouldRetry returns true for timeout errors
+   * *For any* request that times out, the HttpClient SHALL retry.
+   */
+  it('shouldRetry returns true for timeout errors', () => {
+    fc.assert(
+      fc.property(
+        fc.webUrl(),
+        apiKeyArb,
+        fc.option(fc.integer({ min: 100, max: 599 }), { nil: null }),
+        (baseUrl, apiKey, statusCode) => {
+          const client = new HttpClient(baseUrl, apiKey, {
+            timeout: 10000,
+            maxRetries: 2,
+          });
+
+          // 超时时应该重试，无论状态码是什么
+          expect(client.shouldRetry(statusCode, true)).toBe(true);
+        }
+      ),
+      { numRuns: 100 }
+    );
+  });
+
+  /**
+   * Property: shouldRetry returns false for non-retryable status codes
+   * *For any* request that receives a non-retryable status code (e.g., 400, 401, 403, 404),
+   * the HttpClient SHALL NOT retry.
+   */
+  it('shouldRetry returns false for non-retryable status codes', () => {
+    // 非可重试状态码
+    const nonRetryableStatusCodes = [200, 201, 204, 400, 401, 403, 404, 405, 409, 422];
+    
+    fc.assert(
+      fc.property(
+        fc.webUrl(),
+        apiKeyArb,
+        fc.constantFrom(...nonRetryableStatusCodes),
+        (baseUrl, apiKey, statusCode) => {
+          const client = new HttpClient(baseUrl, apiKey, {
+            timeout: 10000,
+            maxRetries: 2,
+          });
+
+          // 非可重试状态码应返回 false
+          expect(client.shouldRetry(statusCode, false)).toBe(false);
+        }
+      ),
+      { numRuns: 100 }
+    );
+  });
+
+  /**
+   * Property: calculateRetryDelay uses exponential backoff
+   * *For any* retry attempt, the delay SHALL follow exponential backoff pattern
+   * with delay = INITIAL_RETRY_DELAY * 2^attempt (with jitter).
+   */
+  it('calculateRetryDelay follows exponential backoff pattern', () => {
+    fc.assert(
+      fc.property(
+        fc.webUrl(),
+        apiKeyArb,
+        fc.integer({ min: 0, max: 10 }),
+        (baseUrl, apiKey, attempt) => {
+          const client = new HttpClient(baseUrl, apiKey, {
+            timeout: 10000,
+            maxRetries: 5,
+          });
+
+          const delay = client.calculateRetryDelay(attempt);
+          const expectedBase = INITIAL_RETRY_DELAY * Math.pow(2, attempt);
+          
+          // 延迟应该在基础值的 75% 到 100% 之间（由于抖动）
+          const minExpected = Math.min(expectedBase * 0.75, MAX_RETRY_DELAY * 0.75);
+          const maxExpected = Math.min(expectedBase, MAX_RETRY_DELAY);
+
+          expect(delay).toBeGreaterThanOrEqual(minExpected);
+          expect(delay).toBeLessThanOrEqual(maxExpected);
+        }
+      ),
+      { numRuns: 100 }
+    );
+  });
+
+  /**
+   * Property: calculateRetryDelay is capped at MAX_RETRY_DELAY
+   * *For any* retry attempt, the delay SHALL NOT exceed MAX_RETRY_DELAY.
+   */
+  it('calculateRetryDelay is capped at MAX_RETRY_DELAY', () => {
+    fc.assert(
+      fc.property(
+        fc.webUrl(),
+        apiKeyArb,
+        fc.integer({ min: 0, max: 20 }),
+        (baseUrl, apiKey, attempt) => {
+          const client = new HttpClient(baseUrl, apiKey, {
+            timeout: 10000,
+            maxRetries: 5,
+          });
+
+          const delay = client.calculateRetryDelay(attempt);
+          
+          // 延迟不应超过最大值
+          expect(delay).toBeLessThanOrEqual(MAX_RETRY_DELAY);
+        }
+      ),
+      { numRuns: 100 }
+    );
+  });
+
+  /**
+   * Property: calculateRetryDelay increases with attempt number
+   * *For any* two consecutive retry attempts, the expected delay for the later
+   * attempt SHALL be greater than or equal to the earlier one (before jitter).
+   */
+  it('calculateRetryDelay generally increases with attempt number', () => {
+    fc.assert(
+      fc.property(
+        fc.webUrl(),
+        apiKeyArb,
+        fc.integer({ min: 0, max: 5 }),
+        (baseUrl, apiKey, attempt) => {
+          const client = new HttpClient(baseUrl, apiKey, {
+            timeout: 10000,
+            maxRetries: 5,
+          });
+
+          // 计算多次以获取平均值（减少抖动影响）
+          const samples = 10;
+          let avgDelay1 = 0;
+          let avgDelay2 = 0;
+          
+          for (let i = 0; i < samples; i++) {
+            avgDelay1 += client.calculateRetryDelay(attempt);
+            avgDelay2 += client.calculateRetryDelay(attempt + 1);
+          }
+          avgDelay1 /= samples;
+          avgDelay2 /= samples;
+
+          // 后续尝试的平均延迟应该更大（除非已达到上限）
+          const expectedBase1 = INITIAL_RETRY_DELAY * Math.pow(2, attempt);
+          const expectedBase2 = INITIAL_RETRY_DELAY * Math.pow(2, attempt + 1);
+          
+          if (expectedBase1 < MAX_RETRY_DELAY && expectedBase2 <= MAX_RETRY_DELAY) {
+            // 如果两者都未达到上限，后者应该更大
+            expect(avgDelay2).toBeGreaterThan(avgDelay1 * 0.8); // 允许一些抖动误差
+          }
+        }
+      ),
+      { numRuns: 100 }
+    );
+  });
+
+  /**
+   * Property: calculateRetryDelay always returns positive value
+   * *For any* retry attempt, the delay SHALL be a positive number.
+   */
+  it('calculateRetryDelay always returns positive value', () => {
+    fc.assert(
+      fc.property(
+        fc.webUrl(),
+        apiKeyArb,
+        fc.integer({ min: 0, max: 100 }),
+        (baseUrl, apiKey, attempt) => {
+          const client = new HttpClient(baseUrl, apiKey, {
+            timeout: 10000,
+            maxRetries: 5,
+          });
+
+          const delay = client.calculateRetryDelay(attempt);
+          
+          expect(delay).toBeGreaterThan(0);
+          expect(Number.isFinite(delay)).toBe(true);
         }
       ),
       { numRuns: 100 }

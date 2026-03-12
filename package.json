@@ -19,6 +19,12 @@
   "license": "ISC",
   "description": "",
   "devDependencies": {
-    "esbuild": "^0.25.0"
+    "esbuild": "^0.25.0",
+    "vite": "^7.3.0",
+    "vitest": "^4.0.16"
+  },
+  "dependencies": {
+    "ai": "^4.3.19",
+    "zhipu-ai-provider": "^0.1.1"
   }
 }
